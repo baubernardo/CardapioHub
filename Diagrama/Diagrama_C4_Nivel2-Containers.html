@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C4 Model - Nível 2: Diagrama de Containers (CardápioHub)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #111827;
+      --person-color: #0284c7;
+      --container-color: #1e40af;
+      --db-color: #1e3a8a;
+      --queue-color: #92400e;
+      --external-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --arrow-color: #64748b;
+      --arrow-label: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .diagram-container {
+      background: var(--card-bg);
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 1250px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Estilos das Caixas C4 */
+    .boundary {
+      fill: #0d1527;
+      stroke: #3b82f6;
+      stroke-width: 1.5;
+      stroke-dasharray: 6, 6;
+    }
+
+    .node-person {
+      fill: #0ea5e9;
+      stroke: #38bdf8;
+      stroke-width: 2;
+    }
+
+    .node-container {
+      fill: #1d4ed8;
+      stroke: #60a5fa;
+      stroke-width: 2;
+    }
+
+    .node-db {
+      fill: #1e3a8a;
+      stroke: #3b82f6;
+      stroke-width: 2;
+    }
+
+    .node-queue {
+      fill: #b45309;
+      stroke: #f59e0b;
+      stroke-width: 2;
+    }
+
+    .node-external {
+      fill: #334155;
+      stroke: #64748b;
+      stroke-width: 2;
+    }
+
+    /* Tipografia */
+    .text-boundary {
+      fill: #60a5fa;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .text-title {
+      fill: #ffffff;
+      font-weight: 700;
+      font-size: 13.5px;
+      text-anchor: middle;
+    }
+
+    .text-tech {
+      fill: #bae6fd;
+      font-size: 11px;
+      font-weight: 600;
+      text-anchor: middle;
+    }
+
+    .text-type {
+      fill: #e2e8f0;
+      font-weight: 500;
+      font-size: 10px;
+      text-anchor: middle;
+      opacity: 0.8;
+    }
+
+    .text-desc {
+      fill: #cbd5e1;
+      font-size: 10px;
+      text-anchor: middle;
+    }
+
+    /* Conexões */
+    .relationship-line {
+      stroke: var(--arrow-color);
+      stroke-width: 1.8;
+      fill: none;
+      stroke-dasharray: 4, 4;
+    }
+
+    .label-box {
+      fill: #0b0f19;
+      stroke: #334155;
+      stroke-width: 1;
+      rx: 4px;
+    }
+
+    .rel-text {
+      fill: var(--arrow-label);
+      font-size: 9.5px;
+      font-weight: 500;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+    }
+
+    .legend-box.person { background: #0ea5e9; }
+    .legend-box.app { background: #1d4ed8; }
+    .legend-box.db { background: #1e3a8a; }
+    .legend-box.queue { background: #b45309; }
+    .legend-box.external { background: #334155; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>CardápioHub — Diagrama de Containers</h1>
+    <p>Modelo C4 (Nível 2): Peças executáveis, tecnologias declaradas e fluxos em tempo real</p>
+  </div>
+
+  <div class="diagram-container">
+    <svg viewBox="0 0 1200 820" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748b" />
+        </marker>
+      </defs>
+
+      <!-- ================= BOUNDARY DO SISTEMA SAAS ================= -->
+      <rect class="boundary" x="270" y="30" width="670" height="760" rx="12" />
+      <text class="text-boundary" x="290" y="60">CARDÁPIOHUB [SISTEMA SAAS]</text>
+
+      <!-- ================= RELAÇÕES / SETAS ================= -->
+
+      <!-- Cliente -> App Next.js -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 135, 170 L 310, 170" />
+      <g transform="translate(220, 160)">
+        <rect class="label-box" x="-60" y="-10" width="120" height="20" />
+        <text class="rel-text">Acessa /restaurante (HTTPS)</text>
+      </g>
+
+      <!-- Gestor -> SPA Vite -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 135, 340 L 310, 340" />
+      <g transform="translate(220, 330)">
+        <rect class="label-box" x="-60" y="-10" width="120" height="20" />
+        <text class="rel-text">Gerencia cardápio (HTTPS)</text>
+      </g>
+
+      <!-- Cozinha -> SPA Vite (WebSocket) -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 135, 510 L 310, 390" />
+      <g transform="translate(210, 460)">
+        <rect class="label-box" x="-65" y="-10" width="130" height="20" />
+        <text class="rel-text">Recebe comandas (WSS)</text>
+      </g>
+
+      <!-- Next.js -> API Gateway/Backend -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 490, 170 L 590, 240" />
+      <g transform="translate(560, 190)">
+        <rect class="label-box" x="-55" y="-10" width="110" height="20" />
+        <text class="rel-text">Cria pedidos (JSON/REST)</text>
+      </g>
+
+      <!-- SPA Vite -> API Gateway/Backend -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 490, 340 L 580, 340" />
+      <g transform="translate(535, 330)">
+        <rect class="label-box" x="-45" y="-10" width="90" height="20" />
+        <text class="rel-text">REST / WebSocket</text>
+      </g>
+
+      <!-- API Backend -> PostgreSQL -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 670, 410 L 670, 520" />
+      <g transform="translate(670, 465)">
+        <rect class="label-box" x="-70" y="-10" width="140" height="20" />
+        <text class="rel-text">Lê/Escreve dados (SQL/JSONB)</text>
+      </g>
+
+      <!-- API Backend -> Redis (BullMQ) -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 760, 340 L 820, 340 L 820, 520" />
+      <g transform="translate(820, 430)">
+        <rect class="label-box" x="-60" y="-10" width="120" height="20" />
+        <text class="rel-text">Enfileira jobs/webhooks</text>
+      </g>
+
+      <!-- Worker -> Redis (BullMQ) -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 590, 690 L 820, 690 L 820, 630" />
+      <g transform="translate(710, 680)">
+        <rect class="label-box" x="-60" y="-10" width="120" height="20" />
+        <text class="rel-text">Consome fila assíncrona</text>
+      </g>
+
+      <!-- Worker -> PostgreSQL -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 500, 630 L 590, 590" />
+      <g transform="translate(530, 620)">
+        <rect class="label-box" x="-45" y="-10" width="90" height="20" />
+        <text class="rel-text">Atualiza status</text>
+      </g>
+
+      <!-- Worker -> Gateway Pagamento -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 410, 740 L 410, 770 L 1055, 770 L 1055, 390" />
+      <g transform="translate(1055, 600)">
+        <rect class="label-box" x="-65" y="-10" width="130" height="20" />
+        <text class="rel-text">Processa split/estorno (HTTPS)</text>
+      </g>
+
+      <!-- Worker -> Mensageria WhatsApp -->
+      <path class="relationship-line" marker-end="url(#arrow)" d="M 590, 720 L 980, 720 L 980, 550" />
+      <g transform="translate(890, 710)">
+        <rect class="label-box" x="-65" y="-10" width="130" height="20" />
+        <text class="rel-text">Dispara mensagens (HTTPS)</text>
+      </g>
+
+      <!-- ================= ATORES ================= -->
+      
+      <!-- Cliente -->
+      <g transform="translate(20, 110)">
+        <rect class="node-person" width="115" height="110" rx="8" />
+        <text class="text-title" x="57" y="45">Cliente Final</text>
+        <text class="text-type" x="57" y="60">[Pessoa]</text>
+        <text class="text-desc" x="57" y="80">Pede pizzas, xis</text>
+        <text class="text-desc" x="57" y="95">e lanches</text>
+      </g>
+
+      <!-- Gestor -->
+      <g transform="translate(20, 280)">
+        <rect class="node-person" width="115" height="110" rx="8" />
+        <text class="text-title" x="57" y="45">Gestor / Dono</text>
+        <text class="text-type" x="57" y="60">[Pessoa]</text>
+        <text class="text-desc" x="57" y="80">Administra catálogo</text>
+        <text class="text-desc" x="57" y="95">e métricas</text>
+      </g>
+
+      <!-- Cozinha -->
+      <g transform="translate(20, 450)">
+        <rect class="node-person" width="115" height="110" rx="8" />
+        <text class="text-title" x="57" y="45">Operação KDS</text>
+        <text class="text-type" x="57" y="60">[Pessoa]</text>
+        <text class="text-desc" x="57" y="80">Visualiza comandas</text>
+        <text class="text-desc" x="57" y="95">e avança preparo</text>
+      </g>
+
+      <!-- ================= CONTAINERS INTERNOS ================= -->
+
+      <!-- Next.js Client Web -->
+      <g transform="translate(310, 110)">
+        <rect class="node-container" width="180" height="115" rx="8" />
+        <text class="text-title" x="90" y="32">Cardápio Web</text>
+        <text class="text-tech" x="90" y="48">[Next.js / SSR]</text>
+        <text class="text-type" x="90" y="62">Container: Web App</text>
+        <text class="text-desc" x="90" y="82">Catálogo público rápido</text>
+        <text class="text-desc" x="90" y="97">com SEO por restaurante</text>
+      </g>
+
+      <!-- React/Vite Admin & KDS -->
+      <g transform="translate(310, 280)">
+        <rect class="node-container" width="180" height="115" rx="8" />
+        <text class="text-title" x="90" y="32">Painel Gestão & KDS</text>
+        <text class="text-tech" x="90" y="48">[React + Vite / SPA]</text>
+        <text class="text-type" x="90" y="62">Container: Web App</text>
+        <text class="text-desc" x="90" y="82">Interface de controle e</text>
+        <text class="text-desc" x="90" y="97">tela de produção em tempo real</text>
+      </g>
+
+      <!-- API Central Node.js -->
+      <g transform="translate(580, 270)">
+        <rect class="node-container" width="180" height="140" rx="8" />
+        <text class="text-title" x="90" y="32">API Backend & WS</text>
+        <text class="text-tech" x="90" y="48">[Node.js / Fastify / WS]</text>
+        <text class="text-type" x="90" y="62">Container: API Service</text>
+        <text class="text-desc" x="90" y="82">Validação JWT (roles),</text>
+        <text class="text-desc" x="90" y="97">roteamento multi-tenant,</text>
+        <text class="text-desc" x="90" y="112">pedidos e WebSocket gateway</text>
+      </g>
+
+      <!-- Worker Assíncrono -->
+      <g transform="translate(410, 630)">
+        <rect class="node-container" width="180" height="110" rx="8" />
+        <text class="text-title" x="90" y="32">Worker de Filas</text>
+        <text class="text-tech" x="90" y="48">[Node.js / BullMQ]</text>
+        <text class="text-type" x="90" y="62">Container: Background Service</text>
+        <text class="text-desc" x="90" y="82">Consome webhooks de pagto</text>
+        <text class="text-desc" x="90" y="97">e despacha notificações</text>
+      </g>
+
+      <!-- PostgreSQL Database -->
+      <g transform="translate(580, 520)">
+        <rect class="node-db" width="180" height="110" rx="8" />
+        <text class="text-title" x="90" y="32">Banco de Dados</text>
+        <text class="text-tech" x="90" y="48">[PostgreSQL + JSONB]</text>
+        <text class="text-type" x="90" y="62">Container: Database</text>
+        <text class="text-desc" x="90" y="82">Instâncias isoladas/schemas,</text>
+        <text class="text-desc" x="90" y="97">itens flexíveis e pedidos</text>
+      </g>
+
+      <!-- Redis Fila -->
+      <g transform="translate(775, 520)">
+        <rect class="node-queue" width="140" height="110" rx="8" />
+        <text class="text-title" x="70" y="32">Fila de Mensagens</text>
+        <text class="text-tech" x="70" y="48">[Redis 7]</text>
+        <text class="text-type" x="70" y="62">Container: Key-Value</text>
+        <text class="text-desc" x="70" y="82">Fila de webhooks e</text>
+        <text class="text-desc" x="70" y="97">eventos assíncronos</text>
+      </g>
+
+      <!-- ================= EXTERNOS ================= -->
+
+      <!-- Gateway de Pagamentos -->
+      <g transform="translate(980, 280)">
+        <rect class="node-external" width="150" height="110" rx="8" />
+        <text class="text-title" x="75" y="35">Gateway Pagamento</text>
+        <text class="text-tech" x="75" y="50">[API Pix / Cartão]</text>
+        <text class="text-type" x="75" y="65">Sistema Externo</text>
+        <text class="text-desc" x="75" y="85">Webhooks e liquidação</text>
+      </g>
+
+      <!-- Notificações -->
+      <g transform="translate(980, 440)">
+        <rect class="node-external" width="150" height="110" rx="8" />
+        <text class="text-title" x="75" y="35">Serviço WhatsApp</text>
+        <text class="text-tech" x="75" y="50">[Evolution / Twilio API]</text>
+        <text class="text-type" x="75" y="65">Sistema Externo</text>
+        <text class="text-desc" x="75" y="85">Envio de status ao cliente</text>
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- LEGENDA -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-box person"></div>
+      <span>Ator (Pessoa)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box app"></div>
+      <span>Container (App / API / Worker)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box db"></div>
+      <span>Container (Banco de Dados)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box queue"></div>
+      <span>Container (Fila / Cache)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box external"></div>
+      <span>Sistema Externo</span>
+    </div>
+  </div>
+
+</body>
+</html>
