@@ -91,6 +91,6 @@ docker exec -it cardapiohub-postgres psql -U cardapio_admin -d cardapiohub_db -c
 ## 5. Autor e Identificação Acadêmica
 
 * **Estudante / Decisor:** Bernardo Gabriel Baú
-* **Contato Institucional:** bernardo.bau@aluno.setrem.edu.br
+* **Contato Institucional:** baubernardo@gmail.com
 * **Professor Avaliador:** Prof. Jonas (jonasrpacheco86)
 * **Instituição:** Sociedade Educacional Três de Maio (SETREM) — Curso de Engenharia de Computação (EC7)
