@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # Banco de Dados Multi-tenant (PostgreSQL 16)
+  # ==========================================
+  cardapiohub-postgres:
+    image: postgres:16-alpine
+    container_name: cardapiohub-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: cardapio_admin
+      POSTGRES_PASSWORD: cardapio_secret_password
+      POSTGRES_DB: cardapiohub_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardapio_admin -d cardapiohub_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cardapiohub-net
+
+  # ==========================================
+  # Fila de Mensageria & Cache (Redis 7)
+  # ==========================================
+  cardapiohub-redis:
+    image: redis:7-alpine
+    container_name: cardapiohub-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass redis_secret_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis_secret_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cardapiohub-net
+
+  # ==========================================
+  # Serviço 1: API Backend & WebSocket Gateway
+  # ==========================================
+  cardapiohub-api:
+    image: node:20-alpine
+    container_name: cardapiohub-api
+    working_dir: /app
+    command: sh -c "echo 'Iniciando API Backend & WS (Node.js/Fastify)...' && sleep infinity"
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgres://cardapio_admin:cardapio_secret_password@cardapiohub-postgres:5432/cardapiohub_db
+      REDIS_HOST: cardapiohub-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_secret_password
+      JWT_SECRET: super_jwt_secret_key_cardapiohub_2026
+    depends_on:
+      cardapiohub-postgres:
+        condition: service_healthy
+      cardapiohub-redis:
+        condition: service_healthy
+    networks:
+      - cardapiohub-net
+
+  # ==========================================
+  # Serviço 2: Worker de Filas (BullMQ)
+  # ==========================================
+  cardapiohub-worker:
+    image: node:20-alpine
+    container_name: cardapiohub-worker
+    working_dir: /app
+    command: sh -c "echo 'Iniciando Worker de Filas (Node.js/BullMQ)...' && sleep infinity"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://cardapio_admin:cardapio_secret_password@cardapiohub-postgres:5432/cardapiohub_db
+      REDIS_HOST: cardapiohub-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_secret_password
+    depends_on:
+      cardapiohub-postgres:
+        condition: service_healthy
+      cardapiohub-redis:
+        condition: service_healthy
+    networks:
+      - cardapiohub-net
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  cardapiohub-net:
+    driver: bridge
