@@ -1,0 +1,50 @@
+name: CI - CardapioHub Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-and-build:
+    name: Build & Validate Multi-Tenant Services
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build & Typecheck - API Service (Fastify)
+        run: |
+          cd api
+          npm ci
+          npm run build
+
+      - name: Build & Typecheck - Worker Service (BullMQ)
+        run: |
+          cd worker
+          npm ci
+          npm run build
+
+      - name: Validar Configuração Docker Compose
+        run: |
+          docker compose config
+
+      - name: Validar Estrutura de Documentação (docs/)
+        run: |
+          test -f docs/visao.md
+          test -f docs/atributos.md
+          test -f docs/lgpd.md
+          test -f docs/contextos.md
+          test -f docs/uso-de-ia.md
+          test -f docs/adr/ADR-001-modelo-de-tenancy.md
+          test -f docs/adr/ADR-002-estrategia-de-comunicacao-entre-servicos.md
+          test -f docs/adr/ADR-003-definicao-da-stack-e-ambiente.md
+          test -f docs/adr/ADR-004-estrategia-de-autenticacao-e-resolucao-de-tenant.md
+          echo "Todos os documentos e servicos validados com sucesso!"

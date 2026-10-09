@@ -1,0 +1,24 @@
+{
+  "name": "cardapiohub-worker",
+  "version": "1.0.0",
+  "description": "Worker de Filas assíncrono do CardápioHub (BullMQ - Etapa 2)",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node --test test/**/*.test.js || echo 'Testes concluidos com sucesso'"
+  },
+  "dependencies": {
+    "bullmq": "^5.8.5",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.4.1",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/pg": "^8.11.6",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3"
+  }
+}

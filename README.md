@@ -2,6 +2,7 @@
 
 > **SaaS B2B Multi-tenant de Cardápio Digital, Pedidos e KDS (*Kitchen Display System*) em Tempo Real**
 
+[![CI Pipeline](https://github.com/baubernardo/CardapioHub/actions/workflows/ci.yml/badge.svg)](https://github.com/baubernardo/CardapioHub/actions)
 [![Projeto Integrador](https://img.shields.io/badge/Projeto%20Integrador-SETREM%202026--2-blue)](https://setrem.com.br)
 [![Disciplina](https://img.shields.io/badge/Disciplina-Arquitetura%20de%20Software%20SAAS%20(8512)-green)](docs/visao.md)
 [![Status](https://img.shields.io/badge/Status-Etapa%201%20%26%202%20Conclu%C3%ADdas-success)](docs/)
@@ -29,7 +30,7 @@ Toda a documentação arquitetural do projeto está estritamente versionada na p
 * 📐 **[Atributos de Qualidade (`docs/atributos.md`)](docs/atributos.md):** Quatro cenários estímulo-resposta mensuráveis com métricas matemáticas (latência p95 < 120 ms no pico, isolamento de vizinho barulhento, provisionamento em < 15 s e zero duplicatas).
 * 🛡️ **[Mapeamento LGPD Preliminar (`docs/lgpd.md`)](docs/lgpd.md):** Inventário de dados pessoais por tenant, bases legais (Art. 7 LGPD), medidas técnicas por camada e protocolo de expurgo atômico.
 
-### ⚙️ Etapa 2 — Núcleo Multi-Tenant (01/10 & 08/10/2026)
+### ⚙️ Etapa 2 — Núcleo Multi-Tenant (01/10 & 08/10/2026 — Defesa em 22/10)
 * 🧩 **[Mapa de Contextos DDD (`docs/contextos.md`)](docs/contextos.md):** Linguagem ubíqua, 5 Bounded Contexts e Context Map (Upstream/Downstream, Customer/Supplier, Anti-Corruption Layer) alinhados ao Encontro 08.
 * 📋 **Architectural Decision Records (ADRs) (`docs/adr/`):**
   * **[ADR 001: Modelo de Tenancy](docs/adr/ADR-001-modelo-de-tenancy.md):** Decisão fundamentada pelo modelo *Schema-per-tenant no PostgreSQL*, comparando Silo Físico vs. Pool Compartilhado com números reais.
@@ -60,30 +61,42 @@ O ambiente da Etapa 2 roda integralmente em containers sem custo de provedor em 
 ### Pré-requisitos:
 * Docker e Docker Compose instalados.
 
-### Inicialização Rápida:
+### Inicialização dos Serviços:
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/baubernardo/CardapioHub.git
 cd CardapioHub
 
-# 2. Suba os containers locais
-docker compose up -d
+# 2. Suba todos os containers e construa os serviços da API e Worker
+docker compose up --build -d
 ```
 
-### Containers em Execução:
-1. **`cardapiohub-postgres`:** PostgreSQL 16 com o schema global `public` e schemas isolados dos tenants de teste (`tenant_xis_gaucho` e `tenant_suprema_express`);
-2. **`cardapiohub-redis`:** Redis 7 com persistência para enfileiramento BullMQ e idempotência;
-3. **`cardapiohub-api`:** Serviço 1 — API Backend e WebSocket Gateway (porta 3001);
+### Containers Ativos:
+1. **`cardapiohub-postgres`:** PostgreSQL 16 com schema global `public` e schemas isolados (`tenant_xis_gaucho` e `tenant_suprema_express`);
+2. **`cardapiohub-redis`:** Redis 7 com persistência para filas BullMQ e travas de idempotência;
+3. **`cardapiohub-api`:** Serviço 1 — API Backend e WebSocket Gateway Fastify (porta `3001`);
 4. **`cardapiohub-worker`:** Serviço 2 — Worker de processamento assíncrono BullMQ.
 
-### Verificação do Isolamento de Tenants:
-Para comprovar que o Tenant A não enxerga dados do Tenant B:
+### Demonstração de Isolamento ao Vivo (Roteiro da Defesa Técnica):
+Para executar a demonstração automática cobrada na banca da Etapa 2:
 ```bash
-# Consulta ao schema do Tenant Pequeno (Xis do Gaúcho)
-docker exec -it cardapiohub-postgres psql -U cardapio_admin -d cardapiohub_db -c "SELECT * FROM tenant_xis_gaucho.pedidos;"
+# Executa o script de teste de isolamento ponta a ponta
+./scripts/demo-isolation.sh
+```
 
-# Consulta ao schema do Tenant Grande (Suprema Express)
-docker exec -it cardapiohub-postgres psql -U cardapio_admin -d cardapiohub_db -c "SELECT * FROM tenant_suprema_express.pedidos;"
+Ou execute manualmente via `curl`:
+```bash
+# 1. Cria pedido no Xis do Gaúcho
+curl -X POST http://localhost:3001/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -H "x-tenant-slug: xis-do-gaucho" \
+  -d '{"cliente_nome": "João", "valor_total": 38.00}'
+
+# 2. Consulta pedidos do Xis do Gaúcho (só retorna pedidos dele)
+curl http://localhost:3001/api/v1/orders -H "x-tenant-slug: xis-do-gaucho"
+
+# 3. Consulta pedidos da Suprema Express (não enxerga o pedido do Xis do Gaúcho)
+curl http://localhost:3001/api/v1/orders -H "x-tenant-slug: suprema-express"
 ```
 
 ---

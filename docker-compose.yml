@@ -49,14 +49,15 @@ services:
   # Serviço 1: API Backend & WebSocket Gateway
   # ==========================================
   cardapiohub-api:
-    image: node:20-alpine
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     container_name: cardapiohub-api
-    working_dir: /app
-    command: sh -c "echo 'Iniciando API Backend & WS (Node.js/Fastify)...' && sleep infinity"
+    restart: always
     ports:
       - "3001:3001"
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       PORT: 3001
       DATABASE_URL: postgres://cardapio_admin:cardapio_secret_password@cardapiohub-postgres:5432/cardapiohub_db
       REDIS_HOST: cardapiohub-redis
@@ -75,12 +76,13 @@ services:
   # Serviço 2: Worker de Filas (BullMQ)
   # ==========================================
   cardapiohub-worker:
-    image: node:20-alpine
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
     container_name: cardapiohub-worker
-    working_dir: /app
-    command: sh -c "echo 'Iniciando Worker de Filas (Node.js/BullMQ)...' && sleep infinity"
+    restart: always
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       DATABASE_URL: postgres://cardapio_admin:cardapio_secret_password@cardapiohub-postgres:5432/cardapiohub_db
       REDIS_HOST: cardapiohub-redis
       REDIS_PORT: 6379
