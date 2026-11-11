@@ -4,12 +4,7 @@ import { pool, resolveTenantSchema, withTenantTransaction } from './db';
 import { orderQueue, checkAndSetIdempotency } from './queue';
 
 const app = Fastify({
-  logger: {
-    transport: {
-      target: 'pino-pretty',
-      options: { translateTime: 'HH:MM:ss Z', ignore: 'pid,hostname' }
-    }
-  }
+  logger: true
 });
 
 app.register(cors, { origin: true });
