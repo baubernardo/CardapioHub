@@ -452,12 +452,12 @@
       </div>
     </section>
 
-    <!-- SLIDE 4: PASSO 1 - DOCKER COMPOSE UP -->
+    <!-- SLIDE 4: SUBINDO O AMBIENTE -->
     <section class="slide" id="slide-4">
-      <div class="slide-tag">Passo 1 da Apresentação</div>
+      <div class="slide-tag">Ambiente & Build</div>
       <h2 class="slide-title">Subindo o Ambiente Local via Terminal</h2>
       <p class="slide-desc">
-        No terminal do seu notebook, na raiz do projeto, executamos o comando de inicialização com compilação automática:
+        Na raiz do projeto, executamos o comando de inicialização com compilação e build automáticos:
       </p>
 
       <div class="code-block" style="margin-bottom: 20px;">
@@ -466,22 +466,22 @@
       </div>
 
       <div class="box">
-        <div class="box-title" style="color: var(--accent-green);">📋 O que a engine do Docker executa nos bastidores:</div>
+        <div class="box-title" style="color: var(--accent-green);">📋 Orquestração de Containers:</div>
         <ul>
           <li>Compila os códigos TypeScript tanto da <strong>API</strong> quanto do <strong>Worker</strong> via Dockerfile multi-stage.</li>
-          <li>Inicializa o PostgreSQL e roda o script SQL <code>01-init-schemas.sql</code> provisionando os schemas dos 2 tenants.</li>
-          <li>Testa o <code>healthcheck</code> do Redis e Postgres antes de liberar o início da API e do Worker.</li>
-          <li>Garante que nenhum serviço suba quebrado ou sem conexão de dados.</li>
+          <li>Inicializa o PostgreSQL e executa o script DDL <code>01-init-schemas.sql</code> provisionando os schemas dos 2 tenants.</li>
+          <li>Valida o <code>healthcheck</code> do Redis e Postgres antes de liberar a inicialização da API e do Worker.</li>
+          <li>Garante que nenhum serviço suba sem conectividade de dados.</li>
         </ul>
       </div>
     </section>
 
-    <!-- SLIDE 5: PASSO 2 - MOSTRAR NO DOCKER DESKTOP -->
+    <!-- SLIDE 5: AMBIENTE EM EXECUÇÃO -->
     <section class="slide" id="slide-5">
-      <div class="slide-tag">Passo 2 da Apresentação</div>
-      <h2 class="slide-title">Mostrando o Ambiente no Docker Desktop</h2>
+      <div class="slide-tag">Topologia & Orquestração</div>
+      <h2 class="slide-title">Ambiente em Execução no Docker</h2>
       <p class="slide-desc">
-        Abra o aplicativo <strong>Docker Desktop</strong> na frente do professor para comprovar a orquestração dos serviços:
+        Visão dos serviços ativos, portas mapeadas e verificação de integridade dos contêineres:
       </p>
 
       <div class="box" style="margin-bottom: 20px;">
@@ -492,7 +492,7 @@
               <th style="padding: 8px;">Nome do Container</th>
               <th style="padding: 8px;">Tecnologia</th>
               <th style="padding: 8px;">Porta</th>
-              <th style="padding: 8px;">Status Esperado</th>
+              <th style="padding: 8px;">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -525,16 +525,16 @@
       </div>
 
       <div class="box" style="background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.3);">
-        <p>💡 <strong>Fala para a banca:</strong> <em>"Como podemos ver aqui no Docker Desktop, temos 4 contêineres desacoplados. A API e o Worker comunicam-se pela rede interna através do Redis, satisfazendo a exigência de 2+ serviços integrados da Etapa 2."</em></p>
+        <p><strong>Desacoplamento de Processos:</strong> A <code>cardapiohub-api</code> (HTTP/REST) e o <code>cardapiohub-worker</code> (consumidor BullMQ) operam em contêineres e processos separados com redes internas compartilhadas, assegurando que gargalos de I/O em filas não comprometam a disponibilidade da camada de API.</p>
       </div>
     </section>
 
-    <!-- SLIDE 6: PASSO 3 - O SCRIPT DE DEMONSTRAÇÃO -->
+    <!-- SLIDE 6: SIMULAÇÃO DE ISOLAMENTO -->
     <section class="slide" id="slide-6">
-      <div class="slide-tag">Passo 3 da Apresentação</div>
-      <h2 class="slide-title">Rodando o Script de Demonstração</h2>
+      <div class="slide-tag">Execução do Teste</div>
+      <h2 class="slide-title">Script Automatizado de Validação</h2>
       <p class="slide-desc">
-        No terminal, executamos o script preparado para a banca:
+        Execução do script automatizado de validação de isolamento multi-tenant:
       </p>
 
       <div class="code-block" style="margin-bottom: 20px;">
@@ -562,7 +562,7 @@
 
     <!-- SLIDE 7: O RESULTADO E O ISOLAMENTO -->
     <section class="slide" id="slide-7">
-      <div class="slide-tag">Passo 4 da Apresentação</div>
+      <div class="slide-tag">Evidência de Isolamento</div>
       <h2 class="slide-title">O Resultado: A Prova de Isolamento ao Vivo</h2>
       <p class="slide-desc">
         A Fase 5 do script executa a consulta <code>GET /api/v1/orders</code> alternando os cabeçalhos de tenant:
@@ -619,10 +619,10 @@
 
     <!-- SLIDE 8: O WORKER EM AÇÃO -->
     <section class="slide" id="slide-8">
-      <div class="slide-tag">Passo 5 da Apresentação</div>
+      <div class="slide-tag">Processamento Assíncrono</div>
       <h2 class="slide-title">O Worker em Ação (Comunicação Assíncrona)</h2>
       <p class="slide-desc">
-        Para comprovar a comunicação assíncrona orientada a filas (ADR-002), mostramos os logs do worker:
+        Comprovação da comunicação assíncrona orientada a filas através dos logs do worker:
       </p>
 
       <div class="code-block" style="margin-bottom: 16px;">
