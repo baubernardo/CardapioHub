@@ -2,6 +2,7 @@
 
 > **SaaS B2B Multi-tenant de Cardápio Digital, Pedidos e KDS (*Kitchen Display System*) em Tempo Real**
 
+[![Apresentação da Defesa Técnica](https://img.shields.io/badge/Apresenta%C3%A7%C3%A3o-Slides%20Interativos%20(HTML)-purple)](apresentacao.html)
 [![CI Pipeline](https://github.com/baubernardo/CardapioHub/actions/workflows/ci.yml/badge.svg)](https://github.com/baubernardo/CardapioHub/actions)
 [![Projeto Integrador](https://img.shields.io/badge/Projeto%20Integrador-SETREM%202026--2-blue)](https://setrem.com.br)
 [![Disciplina](https://img.shields.io/badge/Disciplina-Arquitetura%20de%20Software%20SAAS%20(8512)-green)](docs/visao.md)

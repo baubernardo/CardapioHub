@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apresentação Técnica - CardápioHub (Etapa 2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f293d;
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-purple: #a78bfa;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --code-bg: #070a12;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span.badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 18px;
+    }
+
+    /* Presentation Deck Area */
+    main.deck {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 40px;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1180px;
+      height: calc(100vh - 150px);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 40px 48px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(40px) scale(0.98);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    /* Slide Typography */
+    .slide-tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 8px;
+    }
+
+    .slide-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .slide-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      flex: 1;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* Card Box */
+    .box {
+      background: rgba(11, 15, 25, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .box-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .box p, .box li {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+
+    .box ul {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .box li::before {
+      content: "▹";
+      color: var(--accent-blue);
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    /* Code & Terminal Blocks */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .prompt-symbol {
+      color: var(--accent-green);
+      user-select: none;
+    }
+
+    .hl-cmd { color: #f8fafc; font-weight: 600; }
+    .hl-opt { color: var(--accent-amber); }
+    .hl-val { color: var(--accent-blue); }
+    .hl-ok { color: var(--accent-green); font-weight: 600; }
+    .hl-err { color: #f87171; }
+
+    /* Highlights & Badges */
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .badge-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+    .badge-green { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); }
+    .badge-amber { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); }
+    .badge-purple { background: rgba(167, 139, 250, 0.15); color: var(--accent-purple); }
+
+    /* Footer Controls */
+    footer {
+      background: rgba(17, 24, 39, 0.9);
+      border-top: 1px solid var(--card-border);
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    button.btn {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    button.btn:hover:not(:disabled) {
+      background: #334155;
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    button.btn-primary {
+      background: #0284c7;
+      border-color: #38bdf8;
+    }
+
+    button.btn-primary:hover:not(:disabled) {
+      background: #0369a1;
+      color: #ffffff;
+    }
+
+    button.btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #334155;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dot.active {
+      background: var(--accent-blue);
+      width: 28px;
+    }
+
+    /* Key indicator */
+    .key-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    kbd {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: monospace;
+      font-size: 0.7rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <span>🍔 CardápioHub</span>
+      <span class="badge">Defesa Técnica · Etapa 2</span>
+    </div>
+    <div class="meta">
+      <span><strong>Autor:</strong> Bernardo Gabriel Baú</span>
+      <span><strong>Disciplina:</strong> Arquitetura de Software SAAS (EC7)</span>
+      <span><strong>Data:</strong> 22/10/2026</span>
+    </div>
+  </header>
+
+  <!-- Slide Deck -->
+  <main class="deck">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide active" id="slide-1">
+      <div class="slide-tag">Apresentação do Projeto Integrador</div>
+      <h1 class="slide-title">CardápioHub 🍔🍕<br/><span style="color: var(--accent-blue); font-weight: 600;">SaaS Multi-tenant de Cardápio Digital, Pedidos e KDS</span></h1>
+      <p class="slide-desc">
+        Demonstração prática e ao vivo do <strong>Núcleo Multi-tenant</strong> em execução: 2+ serviços rodando em contêineres, comunicação orientada a eventos e isolamento estrito de dados entre restaurantes concorrentes.
+      </p>
+      
+      <div class="grid-3" style="margin-top: auto;">
+        <div class="box">
+          <div class="box-title" style="color: var(--accent-blue);">🏛️ Arquitetura Sólida</div>
+          <p>Persistência em <strong>Schema-per-tenant no PostgreSQL 16</strong> (ADR-001) e isolamento de runtime em Fastify com injeção de <code>search_path</code> (ADR-004).</p>
+        </div>
+        <div class="box">
+          <div class="box-title" style="color: var(--accent-green);">⚡ Comunicação Híbrida</div>
+          <p>Núcleo transacional síncrono (< 120 ms) e processamento pesado assíncrono via <strong>Redis 7 / BullMQ</strong> com idempotência estrita (ADR-002).</p>
+        </div>
+        <div class="box">
+          <div class="box-title" style="color: var(--accent-amber);">🟢 Pipeline Verde & CI</div>
+          <p>GitHub Actions automatizado validando compilação TypeScript, Dockerfiles e estrutura canônica <code>docs/</code> a cada commit.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: O NEGÓCIO E OS 2 TENANTS -->
+    <section class="slide" id="slide-2">
+      <div class="slide-tag">Visão do Produto & Personas de Tenant</div>
+      <h2 class="slide-title">O Problema do Food Service & Os Dois Tenants</h2>
+      <p class="slide-desc">
+        Bares e pizzarias perdem de <strong>12% a 27% do faturamento</strong> em taxas abusivas de marketplaces. O CardápioHub oferece autoatendimento web direto e KDS em tempo real para dois perfis de lojistas:
+      </p>
+
+      <div class="grid-2">
+        <div class="box" style="border-left: 4px solid var(--accent-blue);">
+          <div class="box-title">
+            <span>🥖 Tenant Pequeno (Interior)</span>
+            <span class="badge-pill badge-blue">R$ 99,00 / mês</span>
+          </div>
+          <ul>
+            <li><strong>Estabelecimento:</strong> Lancheria Xis do Gaúcho (Horizontina - RS)</li>
+            <li><strong>Volume Operacional:</strong> ~600 pedidos/mês (média de 20 pedidos/dia)</li>
+            <li><strong>Usuários:</strong> 3 (1 caixa e 2 chapeiros na cozinha)</li>
+            <li><strong>Restrição Chave:</strong> Custo unitário de infraestrutura marginal &lt; R$ 3,00/mês. Banco dedicado (Silo) inviabilizaria o negócio.</li>
+          </ul>
+        </div>
+
+        <div class="box" style="border-left: 4px solid var(--accent-purple);">
+          <div class="box-title">
+            <span>🍕 Tenant Grande (Capital)</span>
+            <span class="badge-pill badge-purple">R$ 899,00 / mês</span>
+          </div>
+          <ul>
+            <li><strong>Estabelecimento:</strong> Pizzaria Suprema Express (Porto Alegre - RS)</li>
+            <li><strong>Volume Operacional:</strong> ~18.000 pedidos/mês (~600 pedidos/dia)</li>
+            <li><strong>Horário de Pico:</strong> Sextas/Sábados com rajadas de <strong>150 pedidos/hora</strong></li>
+            <li><strong>Usuários:</strong> 45 colaboradores (múltiplas telas KDS e caixas)</li>
+            <li><strong>Restrição Chave:</strong> Throughput alto no KDS, rate-limiting anti-vizinho barulhento e zero risco de vazamento de dados.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: O QUE VAMOS RODAR -->
+    <section class="slide" id="slide-3">
+      <div class="slide-tag">Topologia dos 2+ Serviços</div>
+      <h2 class="slide-title">O Que Vamos Rodar: 4 Containers Integrados</h2>
+      <p class="slide-desc">
+        Toda a stack da Etapa 2 roda localmente com paridade de produção via <strong>Docker Compose</strong> a custo R$ 0,00 (ADR-003):
+      </p>
+
+      <div class="grid-4" style="margin-top: 10px;">
+        <div class="box">
+          <span class="badge-pill badge-blue" style="width: fit-content; margin-bottom: 8px;">Database</span>
+          <div class="box-title">cardapiohub-postgres</div>
+          <p>PostgreSQL 16 Alpine com schema global <code>public</code> e schemas dinâmicos isolados por restaurante (<code>tenant_xis_gaucho</code> e <code>tenant_suprema_express</code>).</p>
+        </div>
+
+        <div class="box">
+          <span class="badge-pill badge-amber" style="width: fit-content; margin-bottom: 8px;">Message Broker</span>
+          <div class="box-title">cardapiohub-redis</div>
+          <p>Redis 7 Alpine com persistência AOF para gerenciar filas BullMQ, pub/sub e travas atômicas de idempotência (<code>SETNX</code>).</p>
+        </div>
+
+        <div class="box" style="border: 1px solid var(--accent-green);">
+          <span class="badge-pill badge-green" style="width: fit-content; margin-bottom: 8px;">Serviço 1 (HTTP/WS)</span>
+          <div class="box-title">cardapiohub-api</div>
+          <p>Node.js 20 + Fastify (porta 3001). Autenticação, injeção de <code>SET LOCAL search_path</code> por transação e checkout com chave Pix.</p>
+        </div>
+
+        <div class="box" style="border: 1px solid var(--accent-purple);">
+          <span class="badge-pill badge-purple" style="width: fit-content; margin-bottom: 8px;">Serviço 2 (Fila)</span>
+          <div class="box-title">cardapiohub-worker</div>
+          <p>Node.js 20 + BullMQ. Drena a fila <code>orders</code>, processa status para <code>EM_PREPARO</code> e despacha WhatsApp assíncrono.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: PASSO 1 - DOCKER COMPOSE UP -->
+    <section class="slide" id="slide-4">
+      <div class="slide-tag">Passo 1 da Apresentação</div>
+      <h2 class="slide-title">Subindo o Ambiente Local via Terminal</h2>
+      <p class="slide-desc">
+        No terminal do seu notebook, na raiz do projeto, executamos o comando de inicialização com compilação automática:
+      </p>
+
+      <div class="code-block" style="margin-bottom: 20px;">
+        <div class="code-header">Terminal / Shell</div>
+        <span class="prompt-symbol">$</span> <span class="hl-cmd">docker compose up --build -d</span>
+      </div>
+
+      <div class="box">
+        <div class="box-title" style="color: var(--accent-green);">📋 O que a engine do Docker executa nos bastidores:</div>
+        <ul>
+          <li>Compila os códigos TypeScript tanto da <strong>API</strong> quanto do <strong>Worker</strong> via Dockerfile multi-stage.</li>
+          <li>Inicializa o PostgreSQL e roda o script SQL <code>01-init-schemas.sql</code> provisionando os schemas dos 2 tenants.</li>
+          <li>Testa o <code>healthcheck</code> do Redis e Postgres antes de liberar o início da API e do Worker.</li>
+          <li>Garante que nenhum serviço suba quebrado ou sem conexão de dados.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: PASSO 2 - MOSTRAR NO DOCKER DESKTOP -->
+    <section class="slide" id="slide-5">
+      <div class="slide-tag">Passo 2 da Apresentação</div>
+      <h2 class="slide-title">Mostrando o Ambiente no Docker Desktop</h2>
+      <p class="slide-desc">
+        Abra o aplicativo <strong>Docker Desktop</strong> na frente do professor para comprovar a orquestração dos serviços:
+      </p>
+
+      <div class="box" style="margin-bottom: 20px;">
+        <div class="box-title">🟢 Containers Ativos e Portas Mapeadas</div>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;">
+          <thead>
+            <tr style="text-align: left; border-bottom: 1px solid var(--card-border); color: var(--text-muted);">
+              <th style="padding: 8px;">Nome do Container</th>
+              <th style="padding: 8px;">Tecnologia</th>
+              <th style="padding: 8px;">Porta</th>
+              <th style="padding: 8px;">Status Esperado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; font-family: monospace; color: var(--accent-blue);">cardapiohub-postgres</td>
+              <td style="padding: 8px;">PostgreSQL 16 Alpine</td>
+              <td style="padding: 8px; font-family: monospace;">5432:5432</td>
+              <td style="padding: 8px; color: var(--accent-green); font-weight: 600;">Up (healthy)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; font-family: monospace; color: var(--accent-amber);">cardapiohub-redis</td>
+              <td style="padding: 8px;">Redis 7 Alpine</td>
+              <td style="padding: 8px; font-family: monospace;">6379:6379</td>
+              <td style="padding: 8px; color: var(--accent-green); font-weight: 600;">Up (healthy)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1e293b;">
+              <td style="padding: 8px; font-family: monospace; color: var(--accent-green);">cardapiohub-api</td>
+              <td style="padding: 8px;">Node.js / Fastify</td>
+              <td style="padding: 8px; font-family: monospace;">3001:3001</td>
+              <td style="padding: 8px; color: var(--accent-green); font-weight: 600;">Up</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; font-family: monospace; color: var(--accent-purple);">cardapiohub-worker</td>
+              <td style="padding: 8px;">Node.js / BullMQ</td>
+              <td style="padding: 8px; font-family: monospace;">— (Interno)</td>
+              <td style="padding: 8px; color: var(--accent-green); font-weight: 600;">Up</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box" style="background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.3);">
+        <p>💡 <strong>Fala para a banca:</strong> <em>"Como podemos ver aqui no Docker Desktop, temos 4 contêineres desacoplados. A API e o Worker comunicam-se pela rede interna através do Redis, satisfazendo a exigência de 2+ serviços integrados da Etapa 2."</em></p>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: PASSO 3 - O SCRIPT DE DEMONSTRAÇÃO -->
+    <section class="slide" id="slide-6">
+      <div class="slide-tag">Passo 3 da Apresentação</div>
+      <h2 class="slide-title">Rodando o Script de Demonstração</h2>
+      <p class="slide-desc">
+        No terminal, executamos o script preparado para a banca:
+      </p>
+
+      <div class="code-block" style="margin-bottom: 20px;">
+        <div class="code-header">Terminal / Shell</div>
+        <span class="prompt-symbol">$</span> <span class="hl-cmd">./scripts/demo-isolation.sh</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="box">
+          <div class="box-title">⚙️ Etapas 1 e 2 do Script</div>
+          <ul>
+            <li><strong>Fase 1:</strong> Faz <code>GET /health</code> e atesta a integridade do Fastify.</li>
+            <li><strong>Fase 2:</strong> Consulta <code>GET /api/v1/tenants</code> no schema <code>public</code>, listando o <em>Xis do Gaúcho</em> e a <em>Suprema Express</em>.</li>
+          </ul>
+        </div>
+        <div class="box">
+          <div class="box-title">📦 Etapas 3 e 4 do Script</div>
+          <ul>
+            <li><strong>Fase 3:</strong> Dispara <code>POST /api/v1/orders</code> com <code>x-tenant-slug: xis-do-gaucho</code> criando a comanda de R$ 38,00.</li>
+            <li><strong>Fase 4:</strong> Dispara <code>POST /api/v1/orders</code> com <code>x-tenant-slug: suprema-express</code> criando a comanda de R$ 240,00.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: O RESULTADO E O ISOLAMENTO -->
+    <section class="slide" id="slide-7">
+      <div class="slide-tag">Passo 4 da Apresentação</div>
+      <h2 class="slide-title">O Resultado: A Prova de Isolamento ao Vivo</h2>
+      <p class="slide-desc">
+        A Fase 5 do script executa a consulta <code>GET /api/v1/orders</code> alternando os cabeçalhos de tenant:
+      </p>
+
+      <div class="grid-2">
+        <div class="box" style="border-top: 3px solid var(--accent-blue);">
+          <div class="box-title" style="color: var(--accent-blue);">Requisição 1: x-tenant-slug: xis-do-gaucho</div>
+          <div class="code-block" style="font-size: 0.78rem;">
+{
+  "tenant": "xis-do-gaucho",
+  "schema": "tenant_xis_gaucho",
+  "total_orders": 1,
+  "orders": [
+    {
+      "numero_comanda": 12,
+      "cliente_nome": "João da Silva",
+      "valor_total": "38.00",
+      "status": "AGUARDANDO_PAGTO"
+    }
+  ]
+}
+          </div>
+          <p style="margin-top: 8px; font-size: 0.8rem; color: var(--accent-green);">✔ Apenas o pedido da lancheria é retornado!</p>
+        </div>
+
+        <div class="box" style="border-top: 3px solid var(--accent-purple);">
+          <div class="box-title" style="color: var(--accent-purple);">Requisição 2: x-tenant-slug: suprema-express</div>
+          <div class="code-block" style="font-size: 0.78rem;">
+{
+  "tenant": "suprema-express",
+  "schema": "tenant_suprema_express",
+  "total_orders": 1,
+  "orders": [
+    {
+      "numero_comanda": 104,
+      "cliente_nome": "Empresa Alfa Tech",
+      "valor_total": "240.00",
+      "status": "AGUARDANDO_PAGTO"
+    }
+  ]
+}
+          </div>
+          <p style="margin-top: 8px; font-size: 0.8rem; color: var(--accent-green);">✔ Apenas o pedido da pizzaria é retornado!</p>
+        </div>
+      </div>
+
+      <div class="box" style="margin-top: 16px; background: rgba(52, 211, 153, 0.1); border-color: rgba(52, 211, 153, 0.3);">
+        <p style="color: var(--accent-green); font-weight: 600; text-align: center;">
+          🔒 ISOLAMENTO COMPROVADO: O schema 'tenant_xis_gaucho' não enxerga os dados de 'tenant_suprema_express' e vice-versa!
+        </p>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: O WORKER EM AÇÃO -->
+    <section class="slide" id="slide-8">
+      <div class="slide-tag">Passo 5 da Apresentação</div>
+      <h2 class="slide-title">O Worker em Ação (Comunicação Assíncrona)</h2>
+      <p class="slide-desc">
+        Para comprovar a comunicação assíncrona orientada a filas (ADR-002), mostramos os logs do worker:
+      </p>
+
+      <div class="code-block" style="margin-bottom: 16px;">
+        <div class="code-header">Terminal / Shell</div>
+        <span class="prompt-symbol">$</span> <span class="hl-cmd">docker logs cardapiohub-worker</span>
+      </div>
+
+      <div class="code-block" style="font-size: 0.82rem; color: #bae6fd; max-height: 220px; overflow-y: auto;">
+[Worker de Filas] Inicializando supervisor BullMQ...
+[Worker] Consumindo job #order:xis-do-gaucho:e8d3a95c do tipo 'order.created'...
+[Worker] Processando pedido #e8d3a95c do restaurante 'xis-do-gaucho'...
+[Worker] Pedido #e8d3a95c (João da Silva - R$ 38.00) atualizado para 'EM_PREPARO' no schema 'tenant_xis_gaucho'!
+[Worker] WhatsApp simulado enviado para +5555999881122: "Seu pedido #12 foi confirmado e está em preparo!"
+[Worker] Consumindo job #order:suprema-express:97155c89 do tipo 'order.created'...
+[Worker] Pedido #97155c89 (Empresa Alfa Tech - R$ 240.00) atualizado para 'EM_PREPARO' no schema 'tenant_suprema_express'!
+[Worker] WhatsApp simulado enviado para +5551988776655: "Seu pedido #104 foi confirmado e está em preparo!"
+      </div>
+
+      <div class="box" style="margin-top: 14px;">
+        <p>💡 <strong>Conexão com o Caso 09:</strong> O envio de WhatsApp e a atualização demorada ocorrem em segundo plano. Se a API de mensagens demorar 8 segundos, o cardápio e o caixa continuam respondendo instantaneamente em menos de 120 ms.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: CONCLUSÃO & RESUMO DA BANCA -->
+    <section class="slide" id="slide-9">
+      <div class="slide-tag">Fechamento & Arguição</div>
+      <h2 class="slide-title">Conclusão da Defesa Técnica (Etapa 2)</h2>
+      <p class="slide-desc">
+        Tudo o que a régua de avaliação da Etapa 2 exige está implementado, testado e documentado:
+      </p>
+
+      <div class="grid-3">
+        <div class="box">
+          <div class="box-title" style="color: var(--accent-blue);">ADR-001: Tenancy</div>
+          <p>Schema-per-tenant no PostgreSQL. Viabiliza o plano de R$ 99 com custo marginal &lt; R$ 3/mês e elimina o risco de queries SQL cruzadas.</p>
+        </div>
+        <div class="box">
+          <div class="box-title" style="color: var(--accent-green);">ADR-002: Comunicação</div>
+          <p>Comunicação mista: Fastify síncrono para checkout e BullMQ/Redis assíncrono para I/O externo com idempotência em 3 níveis.</p>
+        </div>
+        <div class="box">
+          <div class="box-title" style="color: var(--accent-purple);">ADR-004: Runtime</div>
+          <p>Injeção dinâmica de <code>SET LOCAL search_path</code> na transação atômica. O pool de conexões é compartilhado e seguro.</p>
+        </div>
+      </div>
+
+      <div class="box" style="margin-top: 20px; border-color: #334155;">
+        <div class="box-title">🛑 Como Desligar o Ambiente após a Apresentação:</div>
+        <div class="code-block" style="padding: 10px 14px;">
+          <span class="prompt-symbol">$</span> <span class="hl-cmd">docker compose down -v</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <footer>
+    <div class="key-hint">
+      Navegue com <kbd>←</kbd> <kbd>→</kbd> ou espaço
+    </div>
+
+    <div class="slide-dots" id="dotsContainer"></div>
+
+    <div class="nav-buttons">
+      <button class="btn" id="prevBtn">← Anterior</button>
+      <button class="btn btn-primary" id="nextBtn">Próximo →</button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+
+    // Criar os pontos indicadores
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentIndex);
+      });
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentIndex);
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      if (currentIndex === slides.length - 1) {
+        nextBtn.textContent = 'Reiniciar ↺';
+      } else {
+        nextBtn.textContent = 'Próximo →';
+      }
+    }
+
+    function goToSlide(idx) {
+      currentIndex = idx;
+      updateSlide();
+    }
+
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) {
+        currentIndex++;
+      } else {
+        currentIndex = 0;
+      }
+      updateSlide();
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlide();
+      }
+    }
+
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+
+    // Navegação por teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>
