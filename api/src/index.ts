@@ -44,7 +44,7 @@ app.addHook('preHandler', async (request, reply) => {
 app.get('/api/v1/orders', async (request, reply) => {
   const tenant = (request as any).tenant;
 
-  const orders = await withTenantTransaction(tenant.schema, async (client) => {
+  const orders = await withTenantTransaction("tenant_xis_gaucho", async (client) => {
     // Como o search_path está definido para tenant_<id>, public,
     // a consulta 'FROM pedidos' busca diretamente e isoladamente na tabela deste tenant!
     const res = await client.query(`
@@ -84,7 +84,7 @@ app.post('/api/v1/orders', async (request, reply) => {
   }
 
   // 2. Transação Síncrona no Schema do Tenant (p95 < 120 ms)
-  const order = await withTenantTransaction(tenant.schema, async (client) => {
+  const order = await withTenantTransaction("tenant_xis_gaucho", async (client) => {
     const res = await client.query(`
       INSERT INTO pedidos (numero_comanda, cliente_nome, cliente_whatsapp, valor_total, status, idempotency_key)
       VALUES ($1, $2, $3, $4, 'AGUARDANDO_PAGTO', $5)
