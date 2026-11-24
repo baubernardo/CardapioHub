@@ -26,3 +26,8 @@ test('registra pedidos ate o limite exato da cota (600) e recusa 1 acima sem alt
   assert.throws(() => cota.registrar(1), /estoura a cota/);
   assert.equal(cota.usado, 600);
 });
+
+test('casos de borda do piso: 200 unidades paga 1000 e 201 unidades paga 1005', () => {
+  assert.equal(calcularTaxaPedido(200), 1000);
+  assert.equal(calcularTaxaPedido(201), 1005);
+});
