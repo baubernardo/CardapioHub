@@ -12,11 +12,11 @@ Conforme demonstrado no Bloco 7 do Encontro 16 (*"Portão que nunca fechou é de
 
 Para provar que o portão fecha quando o isolamento entre tenants é quebrado, criamos a branch de demonstração `demo/isolamento-quebrado`, na qual o hook `preHandler` da API foi alterado de propósito para fixar todas as leituras no schema `tenant_xis_gaucho` (simulando um erro de filtro/resolução de tenant).
 
-| Execução | Branch | O que mudou no código | Resultado no GitHub Actions | Evidência / Link |
+| Execução | Commit / Branch | O que mudou no código | Resultado no GitHub Actions | Evidência / Link Direto |
 |---|---|---|---|---|
-| **Tronco principal** | `main` | Isolamento ativo por `SET LOCAL search_path TO tenant_<id>, public` (ADR-001 e ADR-004) | **✓ Verde** (todos os testes de unidade, integração e isolamento passam) | [Ver Actions da `main`](https://github.com/baubernardo/CardapioHub/actions/workflows/ci.yml?query=branch%3Amain) |
-| **Ciclo TDD** | `tdd-cota` | 4 pares de commits `red:` / `green:` + `refactor:` das regras de taxa e cota | **✓ Verde** | [Ver Actions da `tdd-cota`](https://github.com/baubernardo/CardapioHub/actions/workflows/ci.yml?query=branch%3Atdd-cota) |
-| **Quebra proposital de isolamento** | `demo/isolamento-quebrado` | Remoção proposital da resolução dinâmica de schema por tenant no `GET /api/v1/orders` | **✗ Vermelho** (`VAZAMENTO CRÍTICO: Pizzaria Suprema Express viu o pedido que pertence a Lancheria Xis do Gaúcho!`) | [Ver execução vermelha da `demo/isolamento-quebrado`](https://github.com/baubernardo/CardapioHub/actions/workflows/ci.yml?query=branch%3Ademo%2Fisolamento-quebrado) |
+| **Tronco principal (Isolamento Ativo)** | `d0d0ba0` (`main`) | Isolamento ativo por `SET LOCAL search_path TO tenant_<id>, public` (ADR-001 e ADR-004) | **✓ Verde** (15 testes de unidade, integração e isolamento passaram) | [https://github.com/baubernardo/CardapioHub/actions/runs/45482673291](https://github.com/baubernardo/CardapioHub/actions/runs/45482673291) |
+| **Ciclo TDD** | `3b78439` (`tdd-cota`) | 4 pares de commits `red:` / `green:` + `refactor:` das regras de taxa e cota | **✓ Verde** | [https://github.com/baubernardo/CardapioHub/tree/tdd-cota](https://github.com/baubernardo/CardapioHub/tree/tdd-cota) |
+| **Quebra proposital de isolamento** | `8ebf902` (`demo/isolamento-quebrado`) | Remoção proposital da resolução dinâmica de schema por tenant no `GET /api/v1/orders` | **✗ Vermelho** (`VAZAMENTO CRÍTICO: Pizzaria Suprema Express viu o pedido que pertence a Lancheria Xis do Gaúcho!`) | [https://github.com/baubernardo/CardapioHub/actions/runs/45481385525](https://github.com/baubernardo/CardapioHub/actions/runs/45481385525) |
 
 ### Trecho da falha capturada pelo teste de isolamento (`testes/isolamento.test.js`):
 ```text
