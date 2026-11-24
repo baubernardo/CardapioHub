@@ -5,6 +5,7 @@
 // ============================================================================
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const http = require('node:http');
 
 const API_URL = process.env.API_URL || 'http://127.0.0.1:3001';
 
@@ -20,41 +21,71 @@ const SUPREMA_EXPRESS = {
   nome: 'Pizzaria Suprema Express',
 };
 
-async function requisitar(tenantSlug, metodo, caminho, corpo, extraHeaders = {}) {
-  const headers = {
-    'content-type': 'application/json',
-    ...extraHeaders,
-  };
+const pausa = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function httpJson(metodo, caminho, headers = {}, corpo = null) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(API_URL + caminho);
+    const payload = corpo ? JSON.stringify(corpo) : null;
+    const reqHeaders = { ...headers };
+    if (payload) {
+      reqHeaders['content-type'] = 'application/json';
+      reqHeaders['content-length'] = Buffer.byteLength(payload);
+    }
+
+    const req = http.request(
+      {
+        hostname: url.hostname,
+        port: url.port,
+        path: url.pathname + url.search,
+        method: metodo,
+        headers: reqHeaders,
+        timeout: 8000,
+      },
+      (res) => {
+        let raw = '';
+        res.on('data', (chunk) => {
+          raw += chunk;
+        });
+        res.on('end', () => {
+          let dados = null;
+          try {
+            dados = JSON.parse(raw);
+          } catch {
+            // resposta sem JSON
+          }
+          resolve({ status: res.statusCode, dados });
+        });
+      }
+    );
+
+    req.on('timeout', () => {
+      req.destroy(new Error('Request timeout'));
+    });
+    req.on('error', (err) => reject(err));
+    if (payload) req.write(payload);
+    req.end();
+  });
+}
+
+async function requisitar(tenantSlug, metodo, caminho, corpo) {
+  const headers = {};
   if (tenantSlug) {
     headers['x-tenant-slug'] = tenantSlug;
   }
-
-  const resposta = await fetch(API_URL + caminho, {
-    method: metodo,
-    headers,
-    body: corpo ? JSON.stringify(corpo) : undefined,
-    signal: AbortSignal.timeout(10000),
-  });
-
-  let dados = null;
-  try {
-    dados = await resposta.json();
-  } catch {
-    // Resposta sem corpo JSON
-  }
-  return { status: resposta.status, dados };
+  return httpJson(metodo, caminho, headers, corpo);
 }
 
 async function esperarSistemaNoAr() {
   const limite = Date.now() + 60000;
   while (Date.now() < limite) {
     try {
-      const r = await fetch(API_URL + '/health', { signal: AbortSignal.timeout(2000) });
+      const r = await httpJson('GET', '/health');
       if (r.status === 200) return;
     } catch {
       // Aguardando container subir
     }
-    await new Promise((r) => setTimeout(r, 500));
+    await pausa(500);
   }
   throw new Error('A API do CardápioHub não respondeu em /health após 60 segundos');
 }
