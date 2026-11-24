@@ -15,3 +15,14 @@ for (const [nome, valor] of [['zero', 0], ['negativo', -5], ['fracao', 12.5], ['
     assert.throws(() => calcularTaxaPedido(valor), /quantidade deve ser inteiro positivo/);
   });
 }
+
+const { CotaTenant } = require('../cota-taxa');
+
+test('registra pedidos ate o limite exato da cota (600) e recusa 1 acima sem alterar saldo', () => {
+  const cota = new CotaTenant({ tenant: 'xis-do-gaucho', limite: 600, usado: 500 });
+  cota.registrar(100);
+  assert.equal(cota.usado, 600);
+
+  assert.throws(() => cota.registrar(1), /estoura a cota/);
+  assert.equal(cota.usado, 600);
+});
