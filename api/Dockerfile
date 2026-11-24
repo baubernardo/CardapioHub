@@ -5,7 +5,7 @@ COPY package*.json tsconfig.json ./
 RUN npm ci
 
 COPY src ./src
-RUN npm run build
+RUN npm run build:docker
 
 FROM node:20-alpine
 

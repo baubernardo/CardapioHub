@@ -6,7 +6,7 @@
 [![CI Pipeline](https://github.com/baubernardo/CardapioHub/actions/workflows/ci.yml/badge.svg)](https://github.com/baubernardo/CardapioHub/actions)
 [![Projeto Integrador](https://img.shields.io/badge/Projeto%20Integrador-SETREM%202026--2-blue)](https://setrem.com.br)
 [![Disciplina](https://img.shields.io/badge/Disciplina-Arquitetura%20de%20Software%20SAAS%20(8512)-green)](docs/visao.md)
-[![Status](https://img.shields.io/badge/Status-Etapa%201%20%26%202%20Conclu%C3%ADdas-success)](docs/)
+[![Status](https://img.shields.io/badge/Status-Etapas%201%2C%202%20%26%203%20Conclu%C3%ADdas-success)](docs/)
 
 ---
 
@@ -39,6 +39,13 @@ Toda a documentação arquitetural do projeto está estritamente versionada na p
   * **[ADR 003: Stack Tecnológica e Ambiente de Execução](docs/adr/ADR-003-definicao-da-stack-e-ambiente.md):** Definição de Node.js (Fastify + BullMQ), Next.js 14, PostgreSQL 16, Redis 7 e orquestração local em Docker Compose / Kind com custo R$ 0,00.
   * **[ADR 004: Autenticação e Resolução de Tenant](docs/adr/ADR-004-estrategia-de-autenticacao-e-resolucao-de-tenant.md):** Isolamento de runtime via JWT RBAC e injeção dinâmica de `SET LOCAL search_path` por conexão.
 * 🤖 **[Declaração de Uso de IA (`docs/uso-de-ia.md`)](docs/uso-de-ia.md):** Transparência do uso de Inteligência Artificial conforme exigência da Seção 3 do Guia.
+
+### 🧪 Etapa 3 — Qualidade, Testes, Carga (k6), SLO e Segurança (26/11/2026)
+* 🚦 **[3.1 Suíte de Testes no Pipeline (`.github/workflows/ci.yml`)](.github/workflows/ci.yml):** Execução automatizada de testes de unidade ([`api/testes/cota-taxa.test.js`](api/testes/cota-taxa.test.js) — ciclo TDD na branch `tdd-cota` com tabela de casos em [`docs/tdd-casos.md`](docs/tdd-casos.md)) e integração ([`testes/integracao.test.js`](testes/integracao.test.js)) a cada push.
+* 🔒 **[3.2 Teste Automatizado de Isolamento de Tenant (`testes/isolamento.test.js`)](testes/isolamento.test.js) & [Plano de Testes (`docs/plano-de-testes.md`)](docs/plano-de-testes.md):** Verificação bidirecional automatizada provando que a *Pizzaria Suprema Express* jamais enxerga pedidos da *Lancheria Xis do Gaúcho* e vice-versa.
+* 📈 **[3.3 Relatório de Teste de Carga com k6 (`docs/carga-enc14.md`)](docs/carga-enc14.md) & [Script k6 (`scripts/carga.k6.js`)](scripts/carga.k6.js):** Medições reais sob pico (`p95 = 12,28 ms`, erro `0,00%`) e sob estresse extremo (até 800 VUs), confrontadas número a número com o SLO e análise de gargalo.
+* 🎯 **[3.4 SLO do Produto (`docs/slo.md`)](docs/slo.md):** Quatro métricas com fórmula, meta, justificativa de negócio, dimensionamento de pico e `thresholds` do k6.
+* 🛡️ **[3.5 Verificação de Segurança e Pipeline (`docs/seguranca-enc15.md`)](docs/seguranca-enc15.md):** Evidência do pipeline verde e vermelho (`demo/isolamento-quebrado`), auditoria de autorização por rota (OWASP A01), verificação de segredos, `npm audit` e medidas técnicas de LGPD.
 
 ---
 

@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && node run-ci-suite.js",
+    "build:docker": "tsc",
     "start": "node dist/index.js",
-    "test": "node --test test/**/*.test.js || echo 'Testes concluidos com sucesso'"
+    "test": "node --test testes/*.test.js"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
